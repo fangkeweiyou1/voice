@@ -37,6 +37,9 @@ public class VoiceDoc {
     //频率
     private static final int[] freqs = new int[19];
 
+    //当前音量大小
+    int currentVolume = 0;
+
     private VoiceCallBack voiceCallBack;
 
     public VoiceDoc(Context context, VoiceCallBack voiceCallBack) {
@@ -114,6 +117,7 @@ public class VoiceDoc {
             @Override
             public void onPlayEnd(VoicePlayer voicePlayer) {
                 Log.i(TAG, "播放结束");
+                resetAudioVolumn();
                 if (voiceCallBack != null) {
                     voiceCallBack.onPlayEnd(voicePlayer);
                 }
@@ -193,6 +197,7 @@ public class VoiceDoc {
         return null;
     }
 
+
     /**
      * 设置音量
      */
@@ -200,9 +205,20 @@ public class VoiceDoc {
         AudioManager mAudioManager = (AudioManager) (context.getSystemService(Context.AUDIO_SERVICE));
         //获取手机最大音量
         int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        currentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         //设置最大音量
         int setVolume = (int) (maxVolume * 0.8f);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+    }
+
+    /**
+     * 重置音量
+     */
+    private void resetAudioVolumn() {
+        if(currentVolume>0) {
+            AudioManager mAudioManager = (AudioManager) (context.getSystemService(Context.AUDIO_SERVICE));
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, 0);
+        }
     }
 
     /**
